@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function userRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    function hasAnyRole(roles) { return isSignedIn() && roles.hasAny([userRole()]); }
+
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if hasAnyRole(['super_admin','content_manager']);
+    }
+
+    match /pages/{pageId} {
+      allow read: if true;
+      allow write: if hasAnyRole(['super_admin','content_manager']);
+      match /versions/{versionId} {
+        allow read: if hasAnyRole(['super_admin','content_manager']);
+        allow write: if hasAnyRole(['super_admin','content_manager']);
+      }
+    }
+
+    match /blogPosts/{postId} {
+      allow read: if true;
+      allow create: if hasAnyRole(['super_admin','content_manager','blogger']);
+      allow update, delete: if hasAnyRole(['super_admin','content_manager']) ||
+        (isSignedIn() && request.resource.data.authorId == request.auth.uid);
+    }
+
+    match /images/{imageId} {
+      allow read: if true;
+      allow write: if hasAnyRole(['super_admin','content_manager']);
+    }
+
+    match /contactMessages/{id} {
+      allow read: if hasAnyRole(['super_admin','content_manager']);
+      allow write: if true; // via callable function or client, validated server-side
+    }
+
+    match /users/{uid} {
+      allow read, write: if hasAnyRole(['super_admin']);
+    }
+  }
+}
+
+

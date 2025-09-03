@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://city-view-8e128.web.app/sitemap.xml
+
+

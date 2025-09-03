@@ -1,0 +1,44 @@
+name: Deploy to Firebase
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Build web
+      run: flutter build web --release
+    
+    - name: Setup Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+        project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
+    
+    - name: Deploy to Firebase Hosting
+      run: |
+        gcloud auth activate-service-account --key-file=<(echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}' | base64 -d)
+        firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID }}
+    
+    - name: Deploy Cloud Functions
+      run: |
+        gcloud auth activate-service-account --key-file=<(echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}' | base64 -d)
+        firebase deploy --only functions --project ${{ secrets.FIREBASE_PROJECT_ID }}
+
+
