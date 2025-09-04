@@ -1,6 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import got from 'got';
+// Initialize Admin SDK BEFORE exporting or importing triggers that use it
+admin.initializeApp();
+
 export * from './imageVariants';
 
 export const sendContactEmail = functions.https.onCall(async (data, context) => {
@@ -18,8 +21,6 @@ export const sendContactEmail = functions.https.onCall(async (data, context) => 
   // Email integration placeholder (e.g., SendGrid/Mailgun)
   return { ok: true };
 });
-
-admin.initializeApp();
 
 export const prerender = functions.https.onRequest(async (req, res) => {
   // Simple prerender proxy placeholder. In production, point this to Rendertron or a prerender service.

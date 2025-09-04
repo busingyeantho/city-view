@@ -44,8 +44,21 @@ class AuthController extends ChangeNotifier {
   }
 
   void _subscribeRole(String uid) {
-    _roleSub = _firestore.collection('users').doc(uid).snapshots().listen((doc) {
-      _role = doc.data()?['role'] as String?;
+    // Prefer users/{uid}; fallback to email-based role doc if schema differs
+    _roleSub = _firestore.collection('users').doc(uid).snapshots().listen((doc) async {
+      String? role;
+      if (doc.exists) {
+        role = doc.data()?['role'] as String?;
+      } else {
+        final email = _user?.email;
+        if (email != null && email.isNotEmpty) {
+          final byEmail = await _firestore.collection('users').where('email', isEqualTo: email).limit(1).get();
+          if (byEmail.docs.isNotEmpty) {
+            role = byEmail.docs.first.data()['role'] as String?;
+          }
+        }
+      }
+      _role = role;
       notifyListeners();
     });
   }

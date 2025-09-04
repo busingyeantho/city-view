@@ -69,11 +69,14 @@ class _OptimizedNetwork extends StatelessWidget {
 
   String? _chooseUrlForWidth(BuildContext context, Map<int, String>? variants) {
     if (variants == null || variants.isEmpty) return null;
-    final viewport = MediaQuery.sizeOf(context).width;
-    final target = (width ?? viewport).clamp(0, double.infinity);
+    final media = MediaQuery.of(context);
+    final viewport = media.size.width;
+    final dpr = media.devicePixelRatio.clamp(1.0, 3.0);
+    final targetCssPx = (width ?? viewport).clamp(0, double.infinity);
+    final targetPhysical = targetCssPx * dpr;
     final sorted = variants.keys.toList()..sort();
     for (final w in sorted) {
-      if (w >= target) return variants[w];
+      if (w >= targetPhysical) return variants[w];
     }
     return variants[sorted.last];
   }
