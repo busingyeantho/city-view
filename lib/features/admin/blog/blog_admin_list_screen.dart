@@ -30,52 +30,71 @@ class _BodyState extends State<_Body> {
     if (_filter == 'published') q = q.where('status', isEqualTo: 'published');
     q = q.orderBy('updatedAt', descending: true);
 
-    return ListView(
+    return Padding(
       padding: const EdgeInsets.all(24),
-      children: [
-        Row(
-          children: [
-            FilledButton(
-              onPressed: () => context.go('/admin/blog/editor'),
-              child: const Text('New Post'),
-            ),
-            const SizedBox(width: 12),
-            FilterChip(
-              label: const Text('Drafts'),
-              selected: _filter == 'drafts',
-              onSelected: (_) => setState(() => _filter = _filter == 'drafts' ? 'all' : 'drafts'),
-            ),
-            const SizedBox(width: 8),
-            FilterChip(
-              label: const Text('Published'),
-              selected: _filter == 'published',
-              onSelected: (_) => setState(() => _filter = _filter == 'published' ? 'all' : 'published'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: q.snapshots(),
-          builder: (context, snapshot) {
-            final docs = snapshot.data?.docs ?? [];
-            if (docs.isEmpty) {
-              return const Center(child: Text('No posts'));
-            }
-            return Column(
-              children: docs.map((d) {
-                final data = d.data();
-                return Card(
-                  child: ListTile(
-                    title: Text(data['title'] ?? '(Untitled)'),
-                    subtitle: Text('${data['status'] ?? 'draft'} • ${(data['updatedAt'] as Timestamp?)?.toDate().toLocal()}'),
-                    onTap: () => context.go('/admin/blog/editor?slug=${data['slug']}'),
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              FilledButton(
+                onPressed: () => context.go('/admin/blog/editor'),
+                child: const Text('New Post'),
+              ),
+              const SizedBox(width: 12),
+              FilterChip(
+                label: const Text('Drafts'),
+                selected: _filter == 'drafts',
+                onSelected: (_) => setState(() => _filter = _filter == 'drafts' ? 'all' : 'drafts'),
+              ),
+              const SizedBox(width: 8),
+              FilterChip(
+                label: const Text('Published'),
+                selected: _filter == 'published',
+                onSelected: (_) => setState(() => _filter = _filter == 'published' ? 'all' : 'published'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: q.snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                final docs = snapshot.data?.docs ?? [];
+                if (docs.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24.0),
+                      child: Text('No posts found'),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final doc = docs[index];
+                    final data = doc.data();
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        title: Text(data['title']?.toString() ?? '(Untitled)'),
+                        subtitle: Text('${data['status'] ?? 'draft'} • ${(data['updatedAt'] as Timestamp?)?.toDate().toLocal().toString()}'),
+                        onTap: () => context.go('/admin/blog/editor?slug=${data['slug']}'),
+                      ),
+                    );
+                  },
                 );
-              }).toList(),
-            );
-          },
-        ),
-      ],
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

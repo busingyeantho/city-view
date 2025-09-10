@@ -36,7 +36,7 @@ class _OptimizedImageState extends State<OptimizedImage> {
               height: widget.height,
               storagePath: widget.storagePath,
             )
-          : Container(color: Theme.of(context).colorScheme.surfaceVariant, width: widget.width, height: widget.height),
+          : Container(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: widget.width, height: widget.height),
     );
   }
 }
@@ -87,7 +87,7 @@ class _OptimizedNetwork extends StatelessWidget {
       fit: fit,
       width: width,
       height: height,
-      placeholder: (c, _) => Container(color: Theme.of(context).colorScheme.surfaceVariant),
+      placeholder: (c, _) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest),
       errorWidget: (c, _, __) => const Icon(Icons.broken_image),
     );
   }

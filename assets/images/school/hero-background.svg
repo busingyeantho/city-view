@@ -1,0 +1,46 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#357ABD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E5B8A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="building" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8F4FD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8D4F0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="600" fill="url(#bg)"/>
+  
+  <!-- School Building -->
+  <rect x="200" y="200" width="800" height="300" fill="url(#building)" stroke="#2E5B8A" stroke-width="2"/>
+  
+  <!-- Building Details -->
+  <rect x="250" y="250" width="100" height="80" fill="#2E5B8A" opacity="0.3"/>
+  <rect x="400" y="250" width="100" height="80" fill="#2E5B8A" opacity="0.3"/>
+  <rect x="550" y="250" width="100" height="80" fill="#2E5B8A" opacity="0.3"/>
+  <rect x="700" y="250" width="100" height="80" fill="#2E5B8A" opacity="0.3"/>
+  
+  <!-- Windows -->
+  <rect x="270" y="270" width="60" height="40" fill="#87CEEB" opacity="0.8"/>
+  <rect x="420" y="270" width="60" height="40" fill="#87CEEB" opacity="0.8"/>
+  <rect x="570" y="270" width="60" height="40" fill="#87CEEB" opacity="0.8"/>
+  <rect x="720" y="270" width="60" height="40" fill="#87CEEB" opacity="0.8"/>
+  
+  <!-- School Name -->
+  <text x="600" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white">
+    City View School
+  </text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="150" cy="100" r="30" fill="#FFD700" opacity="0.7"/>
+  <circle cx="1050" cy="120" r="25" fill="#FFD700" opacity="0.7"/>
+  <circle cx="100" cy="400" r="20" fill="#FFD700" opacity="0.5"/>
+  <circle cx="1100" cy="450" r="35" fill="#FFD700" opacity="0.5"/>
+  
+  <!-- Trees -->
+  <ellipse cx="100" cy="450" rx="40" ry="60" fill="#228B22" opacity="0.8"/>
+  <ellipse cx="1100" cy="480" rx="50" ry="70" fill="#228B22" opacity="0.8"/>
+</svg>

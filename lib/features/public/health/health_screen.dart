@@ -8,14 +8,17 @@ class HealthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       title: 'Health & Nutrition',
-      body: ListView(
-        children: [
-          _HeroSection(),
-          const _NutritionPhilosophySection(),
-          const _MealPlansSection(),
-          const _HealthProgramsSection(),
-          const _WellnessTipsSection(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _HeroSection(),
+            const _NutritionPhilosophySection(),
+            const _MealPlansSection(),
+            const _HealthProgramsSection(),
+            const _WellnessTipsSection(),
+          ],
+        ),
       ),
     );
   }
@@ -189,7 +192,7 @@ class _MealPlansSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      color: theme.colorScheme.surfaceVariant,
+      color: theme.colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.all(24),
       child: Center(
         child: ConstrainedBox(
@@ -462,7 +465,7 @@ class _WellnessTipsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      color: theme.colorScheme.surfaceVariant,
+      color: theme.colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.all(24),
       child: Center(
         child: ConstrainedBox(

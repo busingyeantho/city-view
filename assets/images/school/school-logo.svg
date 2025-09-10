@@ -1,0 +1,51 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E5B8A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="building" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8F4FD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8D4F0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="url(#logoBg)" stroke="#1E3A8A" stroke-width="4"/>
+  
+  <!-- School Building -->
+  <rect x="60" y="80" width="80" height="60" fill="url(#building)" stroke="#2E5B8A" stroke-width="2"/>
+  
+  <!-- Building Details -->
+  <rect x="70" y="90" width="15" height="20" fill="#2E5B8A" opacity="0.4"/>
+  <rect x="90" y="90" width="15" height="20" fill="#2E5B8A" opacity="0.4"/>
+  <rect x="110" y="90" width="15" height="20" fill="#2E5B8A" opacity="0.4"/>
+  <rect x="130" y="90" width="15" height="20" fill="#2E5B8A" opacity="0.4"/>
+  
+  <!-- Windows -->
+  <rect x="75" y="95" width="5" height="10" fill="#87CEEB" opacity="0.8"/>
+  <rect x="95" y="95" width="5" height="10" fill="#87CEEB" opacity="0.8"/>
+  <rect x="115" y="95" width="5" height="10" fill="#87CEEB" opacity="0.8"/>
+  <rect x="135" y="95" width="5" height="10" fill="#87CEEB" opacity="0.8"/>
+  
+  <!-- Roof -->
+  <polygon points="50,80 100,50 150,80" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+  
+  <!-- Flag -->
+  <rect x="95" y="40" width="10" height="15" fill="#8B4513"/>
+  <rect x="105" y="42" width="20" height="11" fill="#FFD700"/>
+  
+  <!-- Decorative Stars -->
+  <polygon points="30,30 32,36 38,36 33,40 35,46 30,42 25,46 27,40 22,36 28,36" fill="#FFD700"/>
+  <polygon points="170,40 172,46 178,46 173,50 175,56 170,52 165,56 167,50 162,46 168,46" fill="#FFD700"/>
+  <polygon points="40,160 42,166 48,166 43,170 45,176 40,172 35,176 37,170 32,166 38,166" fill="#FFD700"/>
+  <polygon points="160,170 162,176 168,176 163,180 165,186 160,182 155,186 157,180 152,176 158,176" fill="#FFD700"/>
+  
+  <!-- School Name -->
+  <text x="100" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">
+    CITY VIEW
+  </text>
+  <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">
+    SCHOOL
+  </text>
+</svg>

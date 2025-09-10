@@ -8,13 +8,15 @@ class AcademicsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       title: 'Academics',
-      body: ListView(
-        children: [
-          _HeroSection(),
-          const _ProgramsSection(),
-          const _CurriculumSection(),
-          const _FacilitiesSection(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _HeroSection(),
+            const _ProgramsSection(),
+            const _CurriculumSection(),
+            const _FacilitiesSection(),
+          ],
+        ),
       ),
     );
   }
@@ -216,7 +218,7 @@ class _CurriculumSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      color: theme.colorScheme.surfaceVariant,
+      color: theme.colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.all(24),
       child: Center(
         child: ConstrainedBox(

@@ -10,7 +10,8 @@ class BlogListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       title: 'Blog & News',
-      body: ListView(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _HeroSection(),
           _BlogPostsSection(),

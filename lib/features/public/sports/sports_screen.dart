@@ -7,14 +7,16 @@ class SportsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
-      title: 'Sports & Games',
-      body: ListView(
-        children: [
-          _HeroSection(),
-          const _SportsActivitiesSection(),
-          const _AchievementsSection(),
-          const _BenefitsSection(),
-        ],
+      title: 'Sports',
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _HeroSection(),
+            const _SportsActivitiesSection(),
+            const _AchievementsSection(),
+            const _BenefitsSection(),
+          ],
+        ),
       ),
     );
   }
@@ -196,7 +198,7 @@ class _AchievementsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      color: theme.colorScheme.surfaceVariant,
+      color: theme.colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.all(24),
       child: Center(
         child: ConstrainedBox(

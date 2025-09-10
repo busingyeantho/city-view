@@ -1,5 +1,4 @@
 import 'dart:html' as html show FileUploadInputElement, document, File; // Web-only
-import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -29,7 +28,7 @@ class _ImagePlaceholderState extends State<ImagePlaceholder> {
         aspectRatio: 16 / 9,
         child: Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceVariant,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(

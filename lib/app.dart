@@ -17,6 +17,9 @@ import 'features/public/academics/academics_screen.dart';
 import 'features/public/sports/sports_screen.dart';
 import 'features/public/health/health_screen.dart';
 import 'features/public/achievements/achievements_screen.dart';
+import 'features/public/admissions/admissions_screen.dart';
+import 'features/public/admissions/admissions_payment_screen.dart';
+import 'features/public/events/events_screen.dart';
 import 'features/admin/theme/theme_editor_screen.dart';
 import 'features/admin/cms/page_editor_screen.dart';
 import 'features/admin/blog/blog_admin_list_screen.dart';
@@ -24,6 +27,17 @@ import 'features/admin/blog/blog_editor_screen.dart';
 import 'features/admin/gallery/gallery_admin_screen.dart';
 import 'features/admin/live/live_stream_admin_screen.dart';
 import 'features/admin/users/users_admin_screen.dart';
+import 'features/admin/admissions/admissions_admin_list_screen.dart';
+import 'features/admin/events/events_admin_screen.dart';
+import 'features/portal/auth/portal_login_screen.dart';
+import 'features/portal/home/portal_home_screen.dart';
+import 'features/portal/homework/portal_homework_screen.dart';
+import 'features/admin/homework/homework_admin_screen.dart';
+import 'features/admin/attendance/attendance_admin_screen.dart';
+import 'features/portal/attendance/portal_attendance_screen.dart';
+import 'features/admin/results/results_admin_screen.dart';
+import 'features/portal/results/portal_results_screen.dart';
+import 'features/portal/results/portal_result_print_screen.dart';
 
 class CityViewApp extends StatelessWidget {
   const CityViewApp({super.key});
@@ -92,6 +106,76 @@ class CityViewApp extends StatelessWidget {
             pageId: state.pathParameters['pageId']!,
             variant: state.pathParameters['variant']!,
           ),
+        ),
+        GoRoute(
+          path: '/admissions',
+          name: 'admissions',
+          builder: (context, state) => const AdmissionsScreen(),
+        ),
+        GoRoute(
+          path: '/admissions/pay/:id',
+          name: 'admissions-pay',
+          builder: (context, state) => AdmissionsPaymentScreen(admissionId: state.pathParameters['id']!),
+        ),
+        GoRoute(
+          path: '/events',
+          name: 'events',
+          builder: (context, state) => const EventsScreen(),
+        ),
+        GoRoute(
+          path: '/portal/login',
+          name: 'portal-login',
+          builder: (context, state) => const PortalLoginScreen(),
+        ),
+        GoRoute(
+          path: '/portal',
+          name: 'portal-home',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/portal/login';
+            return null;
+          },
+          builder: (context, state) => const PortalHomeScreen(),
+        ),
+        GoRoute(
+          path: '/portal/homework',
+          name: 'portal-homework',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/portal/login';
+            return null;
+          },
+          builder: (context, state) => const PortalHomeworkScreen(),
+        ),
+        GoRoute(
+          path: '/portal/attendance',
+          name: 'portal-attendance',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/portal/login';
+            return null;
+          },
+          builder: (context, state) => const PortalAttendanceScreen(),
+        ),
+        GoRoute(
+          path: '/portal/results',
+          name: 'portal-results',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/portal/login';
+            return null;
+          },
+          builder: (context, state) => const PortalResultsScreen(),
+        ),
+        GoRoute(
+          path: '/portal/results/:id/print',
+          name: 'portal-result-print',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/portal/login';
+            return null;
+          },
+          builder: (context, state) => PortalResultPrintScreen(resultId: state.pathParameters['id']!),
         ),
         GoRoute(
           path: '/admin/login',
@@ -178,6 +262,68 @@ class CityViewApp extends StatelessWidget {
             return null;
           },
           builder: (context, state) => const LiveStreamAdminScreen(),
+        ),
+        GoRoute(
+          path: '/admin/admissions',
+          name: 'admin-admissions',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/admin/login';
+            final role = a.role;
+            if (role != 'super_admin' && role != 'content_manager') {
+              return '/admin';
+            }
+            return null;
+          },
+          builder: (context, state) => const AdmissionsAdminListScreen(),
+        ),
+        GoRoute(
+          path: '/admin/events',
+          name: 'admin-events',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/admin/login';
+            final role = a.role;
+            if (role != 'super_admin' && role != 'content_manager') return '/admin';
+            return null;
+          },
+          builder: (context, state) => const EventsAdminScreen(),
+        ),
+        GoRoute(
+          path: '/admin/portal/homework',
+          name: 'admin-portal-homework',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/admin/login';
+            final role = a.role;
+            if (role != 'super_admin' && role != 'content_manager') return '/admin';
+            return null;
+          },
+          builder: (context, state) => const HomeworkAdminScreen(),
+        ),
+        GoRoute(
+          path: '/admin/portal/attendance',
+          name: 'admin-portal-attendance',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/admin/login';
+            final role = a.role;
+            if (role != 'super_admin' && role != 'content_manager') return '/admin';
+            return null;
+          },
+          builder: (context, state) => const AttendanceAdminScreen(),
+        ),
+        GoRoute(
+          path: '/admin/portal/results',
+          name: 'admin-portal-results',
+          redirect: (context, state) {
+            final a = context.read<AuthController>();
+            if (!a.isAuthenticated) return '/admin/login';
+            final role = a.role;
+            if (role != 'super_admin' && role != 'content_manager') return '/admin';
+            return null;
+          },
+          builder: (context, state) => const ResultsAdminScreen(),
         ),
         GoRoute(
           path: '/admin/users',

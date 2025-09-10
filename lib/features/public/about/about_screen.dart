@@ -8,13 +8,15 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       title: 'About Us',
-      body: ListView(
-        children: [
-          _HeroSection(),
-          const _MissionVisionSection(),
-          const _ValuesSection(),
-          const _LeadershipSection(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _HeroSection(),
+            const _MissionVisionSection(),
+            const _ValuesSection(),
+            const _LeadershipSection(),
+          ],
+        ),
       ),
     );
   }
@@ -24,44 +26,107 @@ class _HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      height: 300,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.secondary,
-          ],
-        ),
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1100),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'About City View School',
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  textAlign: TextAlign.center,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  theme.colorScheme.primary,
+                  theme.colorScheme.secondary,
+                ],
+              ),
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1200),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'About City View School',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Sow to reap',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isWide = constraints.maxWidth > 900;
+                          final textStyle = theme.textTheme.bodyLarge?.copyWith(
+                            color: Colors.white70,
+                            height: 1.6,
+                            fontSize: 16,
+                          );
+
+                          return isWide
+                              ? Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        right: 24.0,
+                                      ),
+                                      child: Text(
+                                        'Founded in 2010 by visionary Mr. Tumwebaze James, City View Nursery & Primary School is a distinguished private institution located in Kachenche West, Kakika, at the heart of Mbarara City Centre.\n As a mixed day and boarding school, we are fully licensed and registered by the Ministry of Education,',
+                                        style: textStyle,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 24.0,
+                                      ),
+                                      child: Text(
+                                        'demonstrating our commitment to providing a high-quality, regulated learning environment. Our mission is to nurture young minds in a safe and supportive setting, preparing them for a future of academic and personal success.',
+                                        style: textStyle,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                              : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Founded in 2010 by visionary Mr. Tumwebaze James, City View Nursery & Primary School is a distinguished private institution located in Kachenche West, Kakika, at the heart of Mbarara City Centre.',
+                                    style: textStyle,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    'As a mixed day and boarding school, we are fully licensed and registered by the Ministry of Education, demonstrating our commitment to providing a high-quality, regulated learning environment. Our mission is to nurture young minds in a safe and supportive setting, preparing them for a future of academic and personal success.',
+                                    style: textStyle,
+                                  ),
+                                ],
+                              );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'Nurturing young minds for a brighter future',
-                  style: theme.textTheme.titleLarge?.copyWith(color: Colors.white70),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -82,7 +147,9 @@ class _MissionVisionSection extends StatelessWidget {
             children: [
               Text(
                 'Our Mission & Vision',
-                style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 32),
               LayoutBuilder(
@@ -90,20 +157,20 @@ class _MissionVisionSection extends StatelessWidget {
                   final isWide = constraints.maxWidth > 800;
                   return isWide
                       ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(child: _MissionCard()),
-                            const SizedBox(width: 24),
-                            Expanded(child: _VisionCard()),
-                          ],
-                        )
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: _MissionCard()),
+                          const SizedBox(width: 24),
+                          Expanded(child: _VisionCard()),
+                        ],
+                      )
                       : Column(
-                          children: [
-                            _MissionCard(),
-                            const SizedBox(height: 24),
-                            _VisionCard(),
-                          ],
-                        );
+                        children: [
+                          _MissionCard(),
+                          const SizedBox(height: 24),
+                          _VisionCard(),
+                        ],
+                      );
                 },
               ),
             ],
@@ -129,7 +196,9 @@ class _MissionCard extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Our Mission',
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
@@ -154,11 +223,17 @@ class _VisionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.visibility, size: 48, color: theme.colorScheme.secondary),
+            Icon(
+              Icons.visibility,
+              size: 48,
+              color: theme.colorScheme.secondary,
+            ),
             const SizedBox(height: 16),
             Text(
               'Our Vision',
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
@@ -179,7 +254,7 @@ class _ValuesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      color: theme.colorScheme.surfaceVariant,
+      color: theme.colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.all(24),
       child: Center(
         child: ConstrainedBox(
@@ -188,7 +263,9 @@ class _ValuesSection extends StatelessWidget {
             children: [
               Text(
                 'Our Core Values',
-                style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 32),
               Wrap(
@@ -198,22 +275,26 @@ class _ValuesSection extends StatelessWidget {
                   _ValueCard(
                     icon: Icons.school,
                     title: 'Excellence',
-                    description: 'Striving for the highest standards in education and character development.',
+                    description:
+                        'Striving for the highest standards in education and character development.',
                   ),
                   _ValueCard(
                     icon: Icons.favorite,
                     title: 'Care',
-                    description: 'Creating a warm, supportive environment where every child feels valued.',
+                    description:
+                        'Creating a warm, supportive environment where every child feels valued.',
                   ),
                   _ValueCard(
                     icon: Icons.group,
                     title: 'Community',
-                    description: 'Building strong relationships between students, families, and staff.',
+                    description:
+                        'Building strong relationships between students, families, and staff.',
                   ),
                   _ValueCard(
                     icon: Icons.lightbulb,
                     title: 'Innovation',
-                    description: 'Embracing new technologies and teaching methods to enhance learning.',
+                    description:
+                        'Embracing new technologies and teaching methods to enhance learning.',
                   ),
                 ],
               ),
@@ -251,7 +332,9 @@ class _ValueCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 title,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -283,7 +366,9 @@ class _LeadershipSection extends StatelessWidget {
             children: [
               Text(
                 'Leadership Team',
-                style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 32),
               Wrap(
@@ -292,19 +377,22 @@ class _LeadershipSection extends StatelessWidget {
                 alignment: WrapAlignment.center,
                 children: [
                   _LeaderCard(
-                    name: 'Dr. Sarah Johnson',
-                    position: 'Principal',
-                    description: 'With over 15 years in education, Dr. Johnson leads our school with passion and dedication.',
+                    name: 'Mr.Tumwebaze James',
+                    position: 'city view School Director',
+                    description:
+                        'With over 25 years of experience in education, Mr. James leads our school with passion and dedication.',
                   ),
                   _LeaderCard(
-                    name: 'Mr. David Chen',
-                    position: 'Vice Principal',
-                    description: 'Mr. Chen brings innovative approaches to curriculum development and student engagement.',
+                    name: 'Mr. Godfrey',
+                    position: 'Headmaster city view school',
+                    description:
+                        'Mr. Godfrey brings innovative approaches to curriculum development and student engagement.',
                   ),
                   _LeaderCard(
-                    name: 'Ms. Emily Rodriguez',
-                    position: 'Head of Academics',
-                    description: 'Ms. Rodriguez ensures our academic programs meet the highest standards of excellence.',
+                    name: 'Mrs. Kayesu ',
+                    position: 'School Secretary',
+                    description:
+                        'Ms. Kayesu ensures our secretarial programs meet the highest standards of excellence.',
                   ),
                 ],
               ),
@@ -350,7 +438,9 @@ class _LeaderCard extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 name,
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
@@ -375,5 +465,3 @@ class _LeaderCard extends StatelessWidget {
     );
   }
 }
-
-

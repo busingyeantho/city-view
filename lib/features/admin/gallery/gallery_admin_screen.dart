@@ -31,7 +31,7 @@ class GalleryAdminScreen extends StatelessWidget {
               ),
               itemCount: 12,
               itemBuilder: (context, index) => Container(
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: const Icon(Icons.image),
               ),
             ),

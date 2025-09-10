@@ -8,7 +8,8 @@ class GalleryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       title: 'Gallery',
-      body: ListView(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _HeroSection(),
           const _GalleryCategoriesSection(),

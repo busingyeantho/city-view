@@ -1,45 +1,111 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isSignedIn() { return request.auth != null; }
-    function userRole() {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      if (!isSignedIn()) return null;
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
-    function hasAnyRole(roles) { return isSignedIn() && roles.hasAny([userRole()]); }
-
-    match /settings/{doc} {
-      allow read: if true;
-      allow write: if hasAnyRole(['super_admin','content_manager']);
+    
+    function isAdmin() {
+      if (!isSignedIn()) return false;
+      const role = getUserRole();
+      return role == 'super_admin' || role == 'content_manager';
+    }
+    
+    function isBlogger() {
+      if (!isSignedIn()) return false;
+      const role = getUserRole();
+      return role == 'blogger';
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
+    // Public read access to settings
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Public read access to pages
     match /pages/{pageId} {
       allow read: if true;
-      allow write: if hasAnyRole(['super_admin','content_manager']);
+      allow write: if isAdmin();
+      
       match /versions/{versionId} {
-        allow read: if hasAnyRole(['super_admin','content_manager']);
-        allow write: if hasAnyRole(['super_admin','content_manager']);
+        allow read: if isAdmin();
+        allow write: if isAdmin();
       }
     }
 
+    // Blog posts - public read, authenticated write with ownership
     match /blogPosts/{postId} {
+      // Anyone can read blog posts
       allow read: if true;
-      allow create: if hasAnyRole(['super_admin','content_manager','blogger']);
-      allow update, delete: if hasAnyRole(['super_admin','content_manager']) ||
-        (isSignedIn() && request.resource.data.authorId == request.auth.uid);
+      
+      // Only admins and bloggers can create posts
+      allow create: if isAdmin() || isBlogger();
+      
+      // Only admins or the post author can update/delete
+      allow update, delete: if isAdmin() || 
+        (isSignedIn() && resource.data.authorId == request.auth.uid);
     }
 
+    // Images - public read, admin write
     match /images/{imageId} {
       allow read: if true;
-      allow write: if hasAnyRole(['super_admin','content_manager']);
+      allow write: if isAdmin();
     }
 
+    // Contact messages - public write, admin read
     match /contactMessages/{id} {
-      allow read: if hasAnyRole(['super_admin','content_manager']);
-      allow write: if true; // via callable function or client, validated server-side
+      allow read: if isAdmin();
+      allow create: if true; // Public can submit contact forms
+      allow update, delete: if isAdmin();
     }
 
-    match /users/{uid} {
-      allow read, write: if hasAnyRole(['super_admin']);
+    // Admissions - public create, admin read/update/delete
+    match /admissions/{id} {
+      allow create: if true; // Public can submit applications
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Events - public read, admin write
+    match /events/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Homework - signed-in users can read, admins can manage
+    match /homework/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Attendance - signed-in users can read, admins can create
+    match /attendance/{id} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin();
+    }
+
+    // Results - users can read their own, admins can manage all
+    match /results/{id} {
+      allow read: if isSignedIn() && 
+        (isAdmin() || resource.data.studentId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    // User profiles - admins can manage, users can read their own
+    match /users/{userId} {
+      allow read: if isAdmin() || isOwner(userId);
+      allow create: if isAdmin();
+      allow update, delete: if isAdmin();
     }
   }
 }

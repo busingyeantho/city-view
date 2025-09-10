@@ -36,6 +36,8 @@ class AdminDashboardScreen extends StatelessWidget {
           _DashCard(title: 'Pages / CMS', onTap: () => context.go('/admin/pages')),
           _DashCard(title: 'Blog', onTap: () => context.go('/admin/blog')),
           _DashCard(title: 'Gallery', onTap: () => context.go('/admin/gallery')),
+          _DashCard(title: 'Events', onTap: () => context.go('/admin/events')),
+          _DashCard(title: 'Admissions', onTap: () => context.go('/admin/admissions')),
           _DashCard(title: 'Live Stream', onTap: () => context.go('/admin/live')),
           _DashCard(title: 'Users', onTap: () => context.go('/admin/users')),
           _DashCard(title: 'Theme', onTap: () => context.go('/admin/theme')),

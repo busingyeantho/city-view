@@ -1,0 +1,74 @@
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="classroom" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F0F8FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E6F3FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Classroom Background -->
+  <rect width="600" height="400" fill="url(#classroom)"/>
+  
+  <!-- Floor -->
+  <rect x="0" y="350" width="600" height="50" fill="#D2B48C" opacity="0.3"/>
+  
+  <!-- Desks -->
+  <rect x="50" y="250" width="80" height="50" fill="#8B4513" opacity="0.8"/>
+  <rect x="150" y="250" width="80" height="50" fill="#8B4513" opacity="0.8"/>
+  <rect x="250" y="250" width="80" height="50" fill="#8B4513" opacity="0.8"/>
+  <rect x="350" y="250" width="80" height="50" fill="#8B4513" opacity="0.8"/>
+  <rect x="450" y="250" width="80" height="50" fill="#8B4513" opacity="0.8"/>
+  
+  <!-- Students (simplified) -->
+  <!-- Student 1 -->
+  <circle cx="90" cy="220" r="15" fill="#FFDBAC"/>
+  <rect x="80" y="235" width="20" height="30" fill="#4A90E2"/>
+  <rect x="75" y="265" width="10" height="25" fill="#2E5B8A"/>
+  <rect x="95" y="265" width="10" height="25" fill="#2E5B8A"/>
+  
+  <!-- Student 2 -->
+  <circle cx="190" cy="220" r="15" fill="#FFDBAC"/>
+  <rect x="180" y="235" width="20" height="30" fill="#E74C3C"/>
+  <rect x="175" y="265" width="10" height="25" fill="#2E5B8A"/>
+  <rect x="195" y="265" width="10" height="25" fill="#2E5B8A"/>
+  
+  <!-- Student 3 -->
+  <circle cx="290" cy="220" r="15" fill="#FFDBAC"/>
+  <rect x="280" y="235" width="20" height="30" fill="#27AE60"/>
+  <rect x="275" y="265" width="10" height="25" fill="#2E5B8A"/>
+  <rect x="295" y="265" width="10" height="25" fill="#2E5B8A"/>
+  
+  <!-- Student 4 -->
+  <circle cx="390" cy="220" r="15" fill="#FFDBAC"/>
+  <rect x="380" y="235" width="20" height="30" fill="#F39C12"/>
+  <rect x="375" y="265" width="10" height="25" fill="#2E5B8A"/>
+  <rect x="395" y="265" width="10" height="25" fill="#2E5B8A"/>
+  
+  <!-- Student 5 -->
+  <circle cx="490" cy="220" r="15" fill="#FFDBAC"/>
+  <rect x="480" y="235" width="20" height="30" fill="#9B59B6"/>
+  <rect x="475" y="265" width="10" height="25" fill="#2E5B8A"/>
+  <rect x="495" y="265" width="10" height="25" fill="#2E5B8A"/>
+  
+  <!-- Teacher -->
+  <circle cx="300" cy="150" r="18" fill="#FFDBAC"/>
+  <rect x="285" y="168" width="30" height="40" fill="#2C3E50"/>
+  <rect x="280" y="208" width="12" height="30" fill="#2E5B8A"/>
+  <rect x="308" y="208" width="12" height="30" fill="#2E5B8A"/>
+  
+  <!-- Blackboard -->
+  <rect x="50" y="80" width="200" height="120" fill="#2C3E50" rx="5"/>
+  <rect x="60" y="90" width="180" height="100" fill="#000000" opacity="0.8"/>
+  
+  <!-- Books on desks -->
+  <rect x="60" y="240" width="15" height="20" fill="#E74C3C"/>
+  <rect x="160" y="240" width="15" height="20" fill="#27AE60"/>
+  <rect x="260" y="240" width="15" height="20" fill="#3498DB"/>
+  <rect x="360" y="240" width="15" height="20" fill="#F39C12"/>
+  <rect x="460" y="240" width="15" height="20" fill="#9B59B6"/>
+  
+  <!-- Title -->
+  <text x="300" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50">
+    Active Learning Environment
+  </text>
+</svg>

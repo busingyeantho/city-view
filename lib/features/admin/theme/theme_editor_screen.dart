@@ -25,7 +25,7 @@ class _ThemeEditorScreenState extends State<ThemeEditorScreen> {
     final theme = Theme.of(context).colorScheme;
     primaryCtl = TextEditingController(text: colorToHex(theme.primary));
     secondaryCtl = TextEditingController(text: colorToHex(theme.secondary));
-    backgroundCtl = TextEditingController(text: colorToHex(theme.background));
+    backgroundCtl = TextEditingController(text: colorToHex(theme.surface));
     surfaceCtl = TextEditingController(text: colorToHex(theme.surface));
     _controllersInitialized = true;
   }

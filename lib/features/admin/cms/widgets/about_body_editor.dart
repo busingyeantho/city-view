@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class AboutBodyEditor extends StatefulWidget {
   final DocumentReference<Map<String, dynamic>> docRef;
-  const AboutBodyEditor({required this.docRef});
+  const AboutBodyEditor({super.key, required this.docRef});
 
   @override
   State<AboutBodyEditor> createState() => _AboutBodyEditorState();
