@@ -42,12 +42,17 @@ dependencies:
   seo_renderer: ^0.6.0
   universal_html: ^2.2.4
   share_plus: ^10.0.2
-  flutter_quill: ^10.8.5
+  flutter_quill: 10.8.5
+  flutter_quill_extensions: 10.8.5
+  image_picker: ^1.0.7
   cached_network_image: ^3.4.1
   firebase_core: ^3.3.0
   firebase_auth: ^5.2.0
   cloud_firestore: ^5.4.4
   firebase_storage: ^12.2.0
+  photo_view: ^0.15.0
+  path_provider: ^2.1.2
+  uuid: ^4.3.3
   google_fonts: ^6.1.0
   logging: ^1.2.0
   # Cloud Functions for Firebase (client)
@@ -55,18 +60,16 @@ dependencies:
   intl: ^0.19.0
   http: ^1.2.2
   visibility_detector: ^0.4.0+2
+  file_picker: ^6.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^5.0.0
-  build_runner: ^2.7.2
+  flutter_lints: ^3.0.1
+  mocktail: ^1.0.4
+  build_runner: ^2.4.8
+  mocktail_image_network: ^1.0.1
+  test: ^1.24.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -89,6 +92,9 @@ flutter:
     - assets/images/school/school-logo.svg
     - assets/images/school/sports-activity.svg
     - assets/images/school/students-learning.svg
+    - assets/images/school/CommunityDigitalLab2.png
+    - assets/images/school/communityDigitalLab.png
+    - assets/images/school/CityView.jpeg
     
     # Fonts - include all font files
     - assets/images/school/Noto_Sans/

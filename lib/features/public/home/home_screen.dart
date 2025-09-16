@@ -80,7 +80,7 @@ class HomeScreen extends StatelessWidget {
                           builder: (context, constraints) {
                             // Stack buttons vertically on small screens, horizontally on larger screens
                             final isSmallScreen = constraints.maxWidth < 600;
-                            
+
                             final buttons = [
                               // Enroll Now button
                               SizedBox(
@@ -114,7 +114,10 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: isSmallScreen ? 16 : 0, width: isSmallScreen ? 0 : 20),
+                              SizedBox(
+                                height: isSmallScreen ? 16 : 0,
+                                width: isSmallScreen ? 0 : 20,
+                              ),
                               // Learn More button
                               SizedBox(
                                 width: isSmallScreen ? double.infinity : null,
@@ -151,16 +154,16 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               ),
                             ];
-                            
-                            return isSmallScreen 
+
+                            return isSmallScreen
                                 ? Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: buttons,
-                                  )
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: buttons,
+                                )
                                 : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: buttons,
-                                  );
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: buttons,
+                                );
                           },
                         ),
                       ],
@@ -464,18 +467,20 @@ class _DigitalLabShowcase extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              AnimatedCard(
-                elevation: 6,
+              ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: SizedBox(
-                  height: 300,
+                  height: 400, // Increased height to better fit the image
+                  width: double.infinity,
                   child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      SchoolImages.digitalLab(
-                        width: double.infinity,
-                        height: 300,
+                      // Background image
+                      Image.asset(
+                        'assets/images/school/CommunityDigitalLab2.png',
                         fit: BoxFit.cover,
                       ),
+                      // Gradient overlay
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -488,7 +493,7 @@ class _DigitalLabShowcase extends StatelessWidget {
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(24.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.start,

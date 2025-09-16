@@ -21,9 +21,8 @@ import 'features/public/admissions/admissions_screen.dart';
 import 'features/public/admissions/admissions_payment_screen.dart';
 import 'features/public/events/events_screen.dart';
 import 'features/admin/theme/theme_editor_screen.dart';
-import 'features/admin/cms/page_editor_screen.dart';
-import 'features/admin/blog/blog_admin_list_screen.dart';
-import 'features/admin/blog/blog_editor_screen.dart';
+import 'features/admin/blog/screens/blog_admin_list_screen.dart';
+import 'features/admin/blog/screens/blog_editor_screen.dart';
 import 'features/admin/gallery/gallery_admin_screen.dart';
 import 'features/admin/live/live_stream_admin_screen.dart';
 import 'features/admin/users/users_admin_screen.dart';
@@ -38,6 +37,8 @@ import 'features/portal/attendance/portal_attendance_screen.dart';
 import 'features/admin/results/results_admin_screen.dart';
 import 'features/portal/results/portal_results_screen.dart';
 import 'features/portal/results/portal_result_print_screen.dart';
+import 'features/admin/pagescms/screens/pages_list_screen.dart';
+import 'features/admin/pagescms/screens/page_editor_screen.dart' as pages_cms;
 
 class CityViewApp extends StatelessWidget {
   const CityViewApp({super.key});
@@ -87,7 +88,9 @@ class CityViewApp extends StatelessWidget {
         GoRoute(
           path: '/blog/:slug',
           name: 'blog-detail',
-          builder: (context, state) => BlogDetailScreen(slug: state.pathParameters['slug']!),
+          builder:
+              (context, state) =>
+                  BlogDetailScreen(slug: state.pathParameters['slug']!),
         ),
         GoRoute(
           path: '/gallery',
@@ -102,10 +105,11 @@ class CityViewApp extends StatelessWidget {
         GoRoute(
           path: '/preview/:pageId/:variant',
           name: 'page-preview',
-          builder: (context, state) => PagePreviewScreen(
-            pageId: state.pathParameters['pageId']!,
-            variant: state.pathParameters['variant']!,
-          ),
+          builder:
+              (context, state) => PagePreviewScreen(
+                pageId: state.pathParameters['pageId']!,
+                variant: state.pathParameters['variant']!,
+              ),
         ),
         GoRoute(
           path: '/admissions',
@@ -115,7 +119,10 @@ class CityViewApp extends StatelessWidget {
         GoRoute(
           path: '/admissions/pay/:id',
           name: 'admissions-pay',
-          builder: (context, state) => AdmissionsPaymentScreen(admissionId: state.pathParameters['id']!),
+          builder:
+              (context, state) => AdmissionsPaymentScreen(
+                admissionId: state.pathParameters['id']!,
+              ),
         ),
         GoRoute(
           path: '/events',
@@ -175,7 +182,10 @@ class CityViewApp extends StatelessWidget {
             if (!a.isAuthenticated) return '/portal/login';
             return null;
           },
-          builder: (context, state) => PortalResultPrintScreen(resultId: state.pathParameters['id']!),
+          builder:
+              (context, state) => PortalResultPrintScreen(
+                resultId: state.pathParameters['id']!,
+              ),
         ),
         GoRoute(
           path: '/admin/login',
@@ -204,17 +214,30 @@ class CityViewApp extends StatelessWidget {
         ),
         GoRoute(
           path: '/admin/pages',
-          name: 'admin-pages',
           redirect: (context, state) {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
-            final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager') {
-              return '/admin';
-            }
             return null;
           },
-          builder: (context, state) => const PageEditorScreen(),
+          routes: [
+            GoRoute(
+              path: 'new',
+              name: 'admin-pages-new',
+              builder: (context, state) => const pages_cms.PageEditorScreen(),
+            ),
+            GoRoute(
+              path: ':id',
+              name: 'admin-pages-edit',
+              builder: (context, state) {
+                final pageId = state.pathParameters['id']!;
+                if (pageId == 'new') {
+                  return const pages_cms.PageEditorScreen();
+                }
+                return pages_cms.PageEditorScreen(pageId: pageId);
+              },
+            ),
+          ],
+          builder: (context, state) => const PagesListScreen(),
         ),
         GoRoute(
           path: '/admin/blog',
@@ -284,7 +307,8 @@ class CityViewApp extends StatelessWidget {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
             final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager') return '/admin';
+            if (role != 'super_admin' && role != 'content_manager')
+              return '/admin';
             return null;
           },
           builder: (context, state) => const EventsAdminScreen(),
@@ -296,7 +320,8 @@ class CityViewApp extends StatelessWidget {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
             final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager') return '/admin';
+            if (role != 'super_admin' && role != 'content_manager')
+              return '/admin';
             return null;
           },
           builder: (context, state) => const HomeworkAdminScreen(),
@@ -308,7 +333,8 @@ class CityViewApp extends StatelessWidget {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
             final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager') return '/admin';
+            if (role != 'super_admin' && role != 'content_manager')
+              return '/admin';
             return null;
           },
           builder: (context, state) => const AttendanceAdminScreen(),
@@ -320,7 +346,8 @@ class CityViewApp extends StatelessWidget {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
             final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager') return '/admin';
+            if (role != 'super_admin' && role != 'content_manager')
+              return '/admin';
             return null;
           },
           builder: (context, state) => const ResultsAdminScreen(),
@@ -346,8 +373,7 @@ class CityViewApp extends StatelessWidget {
       title: 'City View School',
       theme: themeController.currentTheme,
       routerConfig: router,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
-
-

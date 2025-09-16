@@ -107,6 +107,18 @@ service cloud.firestore {
       allow create: if isAdmin();
       allow update, delete: if isAdmin();
     }
+
+    // Gallery Categories - public read, admin write
+    match /gallery_categories/{categoryId} {
+      allow read: if true;  // Public read access
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Gallery Images - public read, admin write
+    match /gallery_images/{imageId} {
+      allow read: if true;  // Public read access
+      allow create, update, delete: if isAdmin();
+    }
   }
 }
 

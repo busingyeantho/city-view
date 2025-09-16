@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/school_colors.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 /// A reusable widget for displaying school-branded images
 /// with consistent styling and fallback handling
@@ -56,10 +59,7 @@ class SchoolImage extends StatelessWidget {
     }
 
     if (borderRadius != null) {
-      imageWidget = ClipRRect(
-        borderRadius: borderRadius!,
-        child: imageWidget,
-      );
+      imageWidget = ClipRRect(borderRadius: borderRadius!, child: imageWidget);
     }
 
     return imageWidget;
@@ -115,13 +115,9 @@ class _SchoolImagePainterState extends State<SchoolImagePainter>
       duration: widget.animationDuration,
       vsync: this,
     );
-    _animation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     if (widget.enableAnimation) {
       _animationController.forward();
@@ -169,7 +165,7 @@ class _SchoolImageCustomPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint();
-    
+
     switch (type) {
       case SchoolImageType.heroBackground:
         _paintHeroBackground(canvas, size, paint);
@@ -198,18 +194,18 @@ class _SchoolImageCustomPainter extends CustomPainter {
     paint.shader = null;
     paint.color = SchoolColors.primary;
     canvas.drawRect(rect, paint);
-    
+
     // Note: For a real image, you'll need to modify the SchoolImage widget
     // to properly handle image assets. The current implementation only supports
     // vector drawings and gradients.
-    
+
     // For now, we'll keep the animated building
     paint.color = SchoolColors.secondary3.withOpacity(animationValue);
     final buildingRect = Rect.fromLTWH(
-      size.width * 0.2, 
-      size.height * 0.3 + (1 - animationValue) * 100, 
-      size.width * 0.6, 
-      size.height * 0.5
+      size.width * 0.2,
+      size.height * 0.3 + (1 - animationValue) * 100,
+      size.width * 0.6,
+      size.height * 0.5,
     );
     canvas.drawRect(buildingRect, paint);
 
@@ -241,63 +237,63 @@ class _SchoolImageCustomPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(
-      size.width * 0.5 - textPainter.width / 2, 
-      size.height * 0.1 - (1 - animationValue) * 50
-    ));
+    textPainter.paint(
+      canvas,
+      Offset(
+        size.width * 0.5 - textPainter.width / 2,
+        size.height * 0.1 - (1 - animationValue) * 50,
+      ),
+    );
   }
 
-  void _paintDigitalLab(Canvas canvas, Size size, Paint paint) {
-    // Background using school colors
-    paint.color = SchoolColors.secondary3;
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-
-    // Animated computers (appear one by one)
-    paint.color = SchoolColors.primary;
-    for (int i = 0; i < 5; i++) {
-      final computerAnimation = (animationValue - i * 0.15).clamp(0.0, 1.0);
-      if (computerAnimation > 0) {
-        final computerRect = Rect.fromLTWH(
-          size.width * 0.1 + i * size.width * 0.15,
-          size.height * 0.3 + (1 - computerAnimation) * 50,
-          size.width * 0.1,
-          size.height * 0.2,
-        );
-        canvas.drawRect(computerRect, paint);
-      }
-    }
-
-    // Animated title
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: 'IT Digital Community Laboratory',
-        style: TextStyle(
-          color: SchoolColors.darkText.withOpacity(animationValue),
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
+  void _paintDigitalLab(Canvas canvas, Size size, Paint paint) async {
+    // Draw the background image
+    final image = await loadAsset(
+      'assets/images/school/CommunityDigitalLab2.png',
     );
-    textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.1));
+    final imageSize = Size(image.width.toDouble(), image.height.toDouble());
+    final imageRect = Rect.fromLTWH(0, 0, size.width, size.height);
+
+    // Use a Paint object with the image shader
+    paint.shader = ImageShader(
+      image,
+      TileMode.clamp,
+      TileMode.clamp,
+      Matrix4.identity()
+          .scaled(size.width / imageSize.width, size.height / imageSize.height)
+          .storage,
+    );
+
+    // Draw the image
+    canvas.drawRect(imageRect, paint);
+
+    // Reset shader for any other drawing
+    paint.shader = null;
+
+    // Add a semi-transparent overlay for better text readability
+    paint.color = Colors.black.withOpacity(0.3 * animationValue);
+    canvas.drawRect(imageRect, paint);
   }
 
   void _paintSchoolLogo(Canvas canvas, Size size, Paint paint) {
     // Background circle using school colors
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2 - 5;
-    
+
     final gradient = SchoolColors.primaryGradient;
-    paint.shader = gradient.createShader(Rect.fromCircle(center: center, radius: radius));
+    paint.shader = gradient.createShader(
+      Rect.fromCircle(center: center, radius: radius),
+    );
     canvas.drawCircle(center, radius, paint);
 
     // School building
     paint.shader = null;
     paint.color = SchoolColors.secondary3;
     final buildingRect = Rect.fromLTWH(
-      size.width * 0.3, size.height * 0.4, 
-      size.width * 0.4, size.height * 0.3
+      size.width * 0.3,
+      size.height * 0.4,
+      size.width * 0.4,
+      size.height * 0.3,
     );
     canvas.drawRect(buildingRect, paint);
 
@@ -315,7 +311,10 @@ class _SchoolImageCustomPainter extends CustomPainter {
       textAlign: TextAlign.center,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.8));
+    textPainter.paint(
+      canvas,
+      Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.8),
+    );
   }
 
   void _paintStudentsLearning(Canvas canvas, Size size, Paint paint) {
@@ -326,7 +325,10 @@ class _SchoolImageCustomPainter extends CustomPainter {
     // Students (simplified circles)
     paint.color = SchoolColors.primary;
     for (int i = 0; i < 5; i++) {
-      final studentCenter = Offset(size.width * 0.2 + i * size.width * 0.15, size.height * 0.5);
+      final studentCenter = Offset(
+        size.width * 0.2 + i * size.width * 0.15,
+        size.height * 0.5,
+      );
       canvas.drawCircle(studentCenter, size.width * 0.05, paint);
     }
 
@@ -343,7 +345,10 @@ class _SchoolImageCustomPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.1));
+    textPainter.paint(
+      canvas,
+      Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.1),
+    );
   }
 
   void _paintSportsActivity(Canvas canvas, Size size, Paint paint) {
@@ -363,7 +368,10 @@ class _SchoolImageCustomPainter extends CustomPainter {
     // Students
     paint.color = SchoolColors.primary;
     for (int i = 0; i < 4; i++) {
-      final studentCenter = Offset(size.width * 0.2 + i * size.width * 0.2, size.height * 0.6);
+      final studentCenter = Offset(
+        size.width * 0.2 + i * size.width * 0.2,
+        size.height * 0.6,
+      );
       canvas.drawCircle(studentCenter, size.width * 0.04, paint);
     }
 
@@ -380,7 +388,10 @@ class _SchoolImageCustomPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.1));
+    textPainter.paint(
+      canvas,
+      Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.1),
+    );
   }
 
   void _paintHealthyMeals(Canvas canvas, Size size, Paint paint) {
@@ -391,7 +402,10 @@ class _SchoolImageCustomPainter extends CustomPainter {
     // Food items
     paint.color = SchoolColors.secondary1;
     for (int i = 0; i < 5; i++) {
-      final foodCenter = Offset(size.width * 0.2 + i * size.width * 0.15, size.height * 0.3);
+      final foodCenter = Offset(
+        size.width * 0.2 + i * size.width * 0.15,
+        size.height * 0.3,
+      );
       canvas.drawCircle(foodCenter, size.width * 0.05, paint);
     }
 
@@ -408,11 +422,23 @@ class _SchoolImageCustomPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.1));
+    textPainter.paint(
+      canvas,
+      Offset(size.width * 0.5 - textPainter.width / 2, size.height * 0.1),
+    );
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+Future<ui.Image> loadAsset(String asset) async {
+  final ByteData data = await rootBundle.load(asset);
+  final ui.Codec codec = await ui.instantiateImageCodec(
+    data.buffer.asUint8List(),
+  );
+  final ui.FrameInfo frame = await codec.getNextFrame();
+  return frame.image;
 }
 
 /// Predefined school image widgets for common use cases
@@ -428,11 +454,11 @@ class SchoolImages {
       height: height,
       type: SchoolImageType.heroBackground,
     );
-    
+
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius, child: image);
     }
-    
+
     return image;
   }
 
@@ -447,11 +473,11 @@ class SchoolImages {
       height: height,
       type: SchoolImageType.digitalLab,
     );
-    
+
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius, child: image);
     }
-    
+
     return image;
   }
 
@@ -461,16 +487,20 @@ class SchoolImages {
     BoxFit fit = BoxFit.contain,
     BorderRadius? borderRadius,
   }) {
-    Widget image = SchoolImagePainter(
+    Widget image = Image.asset(
+      'assets/images/school/CityView.jpeg',
       width: width,
       height: height,
-      type: SchoolImageType.schoolLogo,
+      fit: fit,
     );
-    
+
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius, child: image);
+    } else {
+      // Apply circular clip by default for the badge
+      image = ClipOval(child: image);
     }
-    
+
     return image;
   }
 
@@ -485,11 +515,11 @@ class SchoolImages {
       height: height,
       type: SchoolImageType.studentsLearning,
     );
-    
+
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius, child: image);
     }
-    
+
     return image;
   }
 
@@ -504,11 +534,11 @@ class SchoolImages {
       height: height,
       type: SchoolImageType.sportsActivity,
     );
-    
+
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius, child: image);
     }
-    
+
     return image;
   }
 
@@ -523,11 +553,11 @@ class SchoolImages {
       height: height,
       type: SchoolImageType.healthyMeals,
     );
-    
+
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius, child: image);
     }
-    
+
     return image;
   }
 }
