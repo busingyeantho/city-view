@@ -20,7 +20,7 @@ import 'features/public/achievements/achievements_screen.dart';
 import 'features/public/admissions/admissions_screen.dart';
 import 'features/public/admissions/admissions_payment_screen.dart';
 import 'features/public/events/events_screen.dart';
-import 'features/admin/theme/theme_editor_screen.dart';
+import 'features/admin/theme/theme_editor_screen_new.dart' as theme_editor;
 import 'features/admin/blog/screens/blog_admin_list_screen.dart';
 import 'features/admin/blog/screens/blog_editor_screen.dart';
 import 'features/admin/gallery/gallery_admin_screen.dart';
@@ -210,7 +210,7 @@ class CityViewApp extends StatelessWidget {
             if (!a.isAuthenticated) return '/admin/login';
             return null;
           },
-          builder: (context, state) => const ThemeEditorScreen(),
+          builder: (context, state) => const theme_editor.ThemeEditorScreen(),
         ),
         GoRoute(
           path: '/admin/pages',

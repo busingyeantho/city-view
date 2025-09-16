@@ -50,20 +50,25 @@ class ThemeController extends ChangeNotifier {
     }
   }
 
-  void updateColors({
+  Future<void> updateColors({
     required Color primary,
     Color? secondary,
     Color? background,
     Color? surface,
-  }) {
+  }) async {
     _applyColors(primary: primary, secondary: secondary, background: background, surface: surface);
-    _settings.set({
-      'primary': primary.value,
-      'secondary': secondary?.value,
-      'background': background?.value,
-      'surface': surface?.value,
-      'updatedAt': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+    try {
+      await _settings.set({
+        'primary': primary.value,
+        'secondary': secondary?.value,
+        'background': background?.value,
+        'surface': surface?.value,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint('Error updating theme colors: $e');
+      rethrow;
+    }
   }
 
   void _applyColors({
