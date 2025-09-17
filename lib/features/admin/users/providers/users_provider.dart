@@ -17,6 +17,9 @@ class UsersProvider with ChangeNotifier {
   bool _hasMoreUsers = true;
   final int _usersPerPage = 10;
   List<Map<String, dynamic>> _users = [];
+  
+  // Getters for state
+  String? get searchQuery => _searchQuery;
 
   // Getters
   List<Map<String, dynamic>> get users => _users;
@@ -26,6 +29,47 @@ class UsersProvider with ChangeNotifier {
   
   // For backward compatibility
   Stream<String> get errorStream => Stream.value(_error ?? '').asBroadcastStream();
+  
+  // Clear error state
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+  
+  // Search users by email
+  Future<void> searchUsers(String query) async {
+    if (_searchQuery == query) return;
+    _searchQuery = query.isEmpty ? null : query;
+    await _loadUsers(reset: true);
+  }
+  
+  // Toggle user active status
+  Future<bool> toggleUserStatus(String userId, bool isCurrentlyActive) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+      
+      await _firestore.collection('users').doc(userId).update({
+        'isActive': !isCurrentlyActive,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      
+      // Update local state
+      final userIndex = _users.indexWhere((u) => u['id'] == userId);
+      if (userIndex != -1) {
+        _users[userIndex]['isActive'] = !isCurrentlyActive;
+      }
+      
+      return true;
+    } catch (e) {
+      _error = 'Failed to update user status: $e';
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
   
   // Available roles
   static const List<Map<String, dynamic>> availableRoles = [
@@ -79,25 +123,32 @@ class UsersProvider with ChangeNotifier {
         query = query.startAfterDocument(startAfter);
       }
       
-      final snapshot = await query.get();
+      final snapshot = await query.get(const GetOptions(source: Source.serverAndCache));
       
       if (_isDisposed) return;
       
       if (snapshot.docs.isEmpty) {
         _hasMoreUsers = false;
+        _isLoading = false;
+        notifyListeners();
         return;
       }
       
-      final newUsers = snapshot.docs.map((doc) {
+      _lastDocument = snapshot.docs.last;
+      final newUsers = await Future.wait(snapshot.docs.map((doc) async {
         final data = doc.data();
+        final userRole = data['role'] ?? 'user';
         return {
           'id': doc.id,
           ...data,
-          'roleLabel': getRoleLabel(data['role'] ?? 'user'),
+          'roleLabel': getRoleLabel(userRole),
+          'isActive': data['isActive'] ?? true,
+          'createdAt': data['createdAt']?.toDate() ?? DateTime.now(),
         };
-      }).toList();
+      }));
       
       _users = reset ? newUsers : [..._users, ...newUsers];
+      _hasMoreUsers = newUsers.length == effectiveLimit;
       _lastDocument = snapshot.docs.last;
       _hasMoreUsers = newUsers.length >= _usersPerPage;
       
@@ -128,12 +179,6 @@ class UsersProvider with ChangeNotifier {
     await _loadUsers(reset: true);
   }
   
-  // Search users by email
-  Future<void> searchUsers(String query) async {
-    if (_searchQuery == query) return;
-    _searchQuery = query;
-    await _loadUsers(reset: true);
-  }
   
   // Create a new user
   Future<Map<String, dynamic>> createUser({

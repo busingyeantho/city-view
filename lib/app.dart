@@ -25,7 +25,7 @@ import 'features/admin/blog/screens/blog_admin_list_screen.dart';
 import 'features/admin/blog/screens/blog_editor_screen.dart';
 import 'features/admin/gallery/gallery_admin_screen.dart';
 import 'features/admin/live/live_stream_admin_screen.dart';
-import 'features/admin/users/users_admin_screen.dart';
+import 'features/admin/users/screens/users_admin_screen_new.dart';
 import 'features/admin/admissions/admissions_admin_list_screen.dart';
 import 'features/admin/events/events_admin_screen.dart';
 import 'features/portal/auth/portal_login_screen.dart';
@@ -307,8 +307,9 @@ class CityViewApp extends StatelessWidget {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
             final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager')
+            if (role != 'super_admin' && role != 'content_manager') {
               return '/admin';
+            }
             return null;
           },
           builder: (context, state) => const EventsAdminScreen(),
@@ -320,8 +321,9 @@ class CityViewApp extends StatelessWidget {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
             final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager')
+            if (role != 'super_admin' && role != 'content_manager') {
               return '/admin';
+            }
             return null;
           },
           builder: (context, state) => const HomeworkAdminScreen(),
@@ -333,8 +335,9 @@ class CityViewApp extends StatelessWidget {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
             final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager')
+            if (role != 'super_admin' && role != 'content_manager') {
               return '/admin';
+            }
             return null;
           },
           builder: (context, state) => const AttendanceAdminScreen(),
@@ -346,8 +349,9 @@ class CityViewApp extends StatelessWidget {
             final a = context.read<AuthController>();
             if (!a.isAuthenticated) return '/admin/login';
             final role = a.role;
-            if (role != 'super_admin' && role != 'content_manager')
+            if (role != 'super_admin' && role != 'content_manager') {
               return '/admin';
+            }
             return null;
           },
           builder: (context, state) => const ResultsAdminScreen(),
