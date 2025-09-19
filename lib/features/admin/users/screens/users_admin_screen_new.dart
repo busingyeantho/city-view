@@ -270,83 +270,68 @@ class _UsersAdminScreenContentState extends State<_UsersAdminScreenContent> {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       title: 'User Management',
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Consumer<UsersProvider>(
-            builder: (context, provider, _) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      body: Consumer<UsersProvider>(
+        builder: (context, provider, _) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 16),
+              _buildFilterSection(),
+              if (_showAddUserForm) _buildAddUserForm(),
+              const SizedBox(height: 16),
+              if (provider.error != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
                       children: [
-                        _buildHeader(),
-                        const SizedBox(height: 16),
-                        _buildFilterSection(),
-                        if (_showAddUserForm) _buildAddUserForm(),
-                        const SizedBox(height: 16),
-                        if (provider.error != null)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.errorContainer,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.error_outline,
-                                    color:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.onErrorContainer,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      provider.error!,
-                                      style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.onErrorContainer,
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.close, size: 20),
-                                    onPressed: () {
-                                      provider.clearError();
-                                    },
-                                  ),
-                                ],
-                              ),
+                        Icon(
+                          Icons.error_outline,
+                          color: Theme.of(context).colorScheme.onErrorContainer,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            provider.error!,
+                            style: TextStyle(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onErrorContainer,
                             ),
                           ),
-                        const SizedBox(height: 8),
-                        if (provider.isLoading && provider.users.isEmpty)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        else
-                          Expanded(child: _buildUsersList()),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 20),
+                          onPressed: () {
+                            provider.clearError();
+                          },
+                        ),
                       ],
                     ),
                   ),
                 ),
-              );
-            },
+              const SizedBox(height: 8),
+              if (provider.isLoading && provider.users.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              // IMPORTANT: Avoid Expanded in a Column within a scrollable parent (unbounded height)
+              // Give the list a finite height so it can layout properly.
+              SizedBox(
+                height: 600, // TODO: optionally compute dynamically
+                child: _buildUsersList(),
+              ),
+            ],
           );
         },
       ),
@@ -643,44 +628,38 @@ class _UsersAdminScreenContentState extends State<_UsersAdminScreenContent> {
         }
 
         if (provider.users.isEmpty) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height * 0.5,
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.people_outline,
-                      size: 64,
-                      color: Theme.of(context).disabledColor,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No users found',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    if (provider.searchQuery?.isNotEmpty == true) ...{
-                      const SizedBox(height: 8),
-                      Text(
-                        'Try adjusting your search or filter',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      FilledButton.icon(
-                        onPressed: () {
-                          provider.searchUsers('');
-                          _searchController.clear();
-                        },
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Clear Search'),
-                      ),
-                    },
-                  ],
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.people_outline,
+                  size: 64,
+                  color: Theme.of(context).disabledColor,
                 ),
-              ),
+                const SizedBox(height: 16),
+                Text(
+                  'No users found',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                if (provider.searchQuery?.isNotEmpty == true) ...{
+                  const SizedBox(height: 8),
+                  Text(
+                    'Try adjusting your search or filter',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: () {
+                      provider.searchUsers('');
+                      _searchController.clear();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Clear Search'),
+                  ),
+                },
+              ],
             ),
           );
         }
@@ -688,8 +667,6 @@ class _UsersAdminScreenContentState extends State<_UsersAdminScreenContent> {
         return RefreshIndicator(
           onRefresh: () => provider.initialize(),
           child: ListView.builder(
-            shrinkWrap: true,
-            physics: const ClampingScrollPhysics(),
             controller: _scrollController,
             padding: const EdgeInsets.only(bottom: 16),
             itemCount: provider.users.length + (provider.hasMoreUsers ? 1 : 0),

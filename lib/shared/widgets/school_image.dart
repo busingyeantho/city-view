@@ -107,6 +107,8 @@ class _SchoolImagePainterState extends State<SchoolImagePainter>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+  ui.Image? _digitalLabImage;
+  bool _isLoadingImage = false;
 
   @override
   void initState() {
@@ -121,6 +123,11 @@ class _SchoolImagePainterState extends State<SchoolImagePainter>
 
     if (widget.enableAnimation) {
       _animationController.forward();
+    }
+
+    // Preload assets needed for painting to avoid async work in paint()
+    if (widget.type == SchoolImageType.digitalLab) {
+      _loadDigitalLabImage();
     }
   }
 
@@ -140,10 +147,28 @@ class _SchoolImagePainterState extends State<SchoolImagePainter>
           painter: _SchoolImageCustomPainter(
             widget.type,
             animationValue: widget.enableAnimation ? _animation.value : 1.0,
+            digitalLabImage: _digitalLabImage,
           ),
         );
       },
     );
+  }
+
+  Future<void> _loadDigitalLabImage() async {
+    if (_isLoadingImage) return;
+    _isLoadingImage = true;
+    try {
+      final img = await loadAsset('assets/images/school/CommunityDigitalLab2.png');
+      if (mounted) {
+        setState(() {
+          _digitalLabImage = img;
+        });
+      }
+    } catch (_) {
+      // Ignore; painter will draw a placeholder overlay
+    } finally {
+      _isLoadingImage = false;
+    }
   }
 }
 
@@ -159,12 +184,23 @@ enum SchoolImageType {
 class _SchoolImageCustomPainter extends CustomPainter {
   final SchoolImageType type;
   final double animationValue;
+  final ui.Image? digitalLabImage;
 
-  _SchoolImageCustomPainter(this.type, {this.animationValue = 1.0});
+  _SchoolImageCustomPainter(
+    this.type, {
+    this.animationValue = 1.0,
+    this.digitalLabImage,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint();
+    // Safety guards for CanvasKit/web: avoid drawing with invalid sizes
+    if (!(size.width.isFinite && size.height.isFinite)) return;
+    if (size.width <= 0 || size.height <= 0) return;
+
+    final paint = Paint()
+      ..isAntiAlias = true
+      ..color = Colors.white;
 
     switch (type) {
       case SchoolImageType.heroBackground:
@@ -246,33 +282,51 @@ class _SchoolImageCustomPainter extends CustomPainter {
     );
   }
 
-  void _paintDigitalLab(Canvas canvas, Size size, Paint paint) async {
-    // Draw the background image
-    final image = await loadAsset(
-      'assets/images/school/CommunityDigitalLab2.png',
-    );
+  void _paintDigitalLab(Canvas canvas, Size size, Paint paint) {
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+
+    // If image is not yet loaded, draw a placeholder gradient background
+    if (digitalLabImage == null) {
+      final gradient = const LinearGradient(
+        colors: [Color(0xFFEEF2F7), Color(0xFFDCE3EC)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      paint.shader = gradient.createShader(rect);
+      canvas.drawRect(rect, paint);
+      paint.shader = null;
+
+      // Subtle overlay based on animation
+      paint.color = Colors.black.withOpacity(0.05 * animationValue);
+      canvas.drawRect(rect, paint);
+      return;
+    }
+
+    final image = digitalLabImage!;
     final imageSize = Size(image.width.toDouble(), image.height.toDouble());
-    final imageRect = Rect.fromLTWH(0, 0, size.width, size.height);
 
     // Use a Paint object with the image shader
+    final Matrix4 m = Matrix4.identity()
+      ..scale(
+        imageSize.width == 0 ? 1.0 : size.width / imageSize.width,
+        imageSize.height == 0 ? 1.0 : size.height / imageSize.height,
+      );
     paint.shader = ImageShader(
       image,
       TileMode.clamp,
       TileMode.clamp,
-      Matrix4.identity()
-          .scaled(size.width / imageSize.width, size.height / imageSize.height)
-          .storage,
+      m.storage,
     );
 
-    // Draw the image
-    canvas.drawRect(imageRect, paint);
+    // Draw the image fill
+    canvas.drawRect(rect, paint);
 
     // Reset shader for any other drawing
     paint.shader = null;
 
     // Add a semi-transparent overlay for better text readability
     paint.color = Colors.black.withOpacity(0.3 * animationValue);
-    canvas.drawRect(imageRect, paint);
+    canvas.drawRect(rect, paint);
   }
 
   void _paintSchoolLogo(Canvas canvas, Size size, Paint paint) {
@@ -429,7 +483,11 @@ class _SchoolImageCustomPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _SchoolImageCustomPainter oldDelegate) {
+    return oldDelegate.type != type ||
+        oldDelegate.animationValue != animationValue ||
+        oldDelegate.digitalLabImage != digitalLabImage;
+  }
 }
 
 Future<ui.Image> loadAsset(String asset) async {
