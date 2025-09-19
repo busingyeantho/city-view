@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 class UsersProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
   
   // State
   bool _isDisposed = false;
@@ -192,40 +192,67 @@ class UsersProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
       
-      // Create user in Firebase Auth
-      final userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      
-      if (userCredential.user == null) {
-        throw Exception('Failed to create user');
+      // Use a secondary FirebaseApp so the admin session is not affected
+      FirebaseApp? secondaryApp;
+      firebase_auth.FirebaseAuth? secondaryAuth;
+      try {
+        // Get default app options and initialize a secondary app
+        final defaultApp = Firebase.app();
+        try {
+          secondaryApp = Firebase.app('secondary');
+        } catch (_) {
+          secondaryApp = await Firebase.initializeApp(
+            name: 'secondary',
+            options: defaultApp.options,
+          );
+        }
+
+        secondaryAuth = firebase_auth.FirebaseAuth.instanceFor(app: secondaryApp);
+        final userCredential = await secondaryAuth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        final uid = userCredential.user?.uid;
+        if (uid == null) {
+          throw Exception('Failed to create user');
+        }
+
+        // Create user document in Firestore
+        final userData = {
+          'email': email,
+          'role': role,
+          'isActive': true,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          if (additionalData != null) ...additionalData,
+        };
+
+        await _firestore.collection('users').doc(uid).set(userData);
+
+        // Refresh users list
+        await _loadUsers(reset: true);
+
+        return {
+          'success': true,
+          'id': uid,
+          ...userData,
+        };
+      } finally {
+        // Clean up secondary auth/app to avoid resource leaks
+        try {
+          await secondaryAuth?.signOut();
+        } catch (_) {}
+        try {
+          await secondaryApp?.delete();
+        } catch (_) {}
       }
-      
-      // Create user document in Firestore
-      final userData = {
-        'email': email,
-        'role': role,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        if (additionalData != null) ...additionalData,
-      };
-      
-      await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .set(userData);
-      
-      // Refresh users list
-      await _loadUsers(reset: true);
-      
-      return {
-        'id': userCredential.user!.uid,
-        ...userData,
-      };
     } catch (e) {
       _error = 'Failed to create user: $e';
-      rethrow;
+      return {
+        'success': false,
+        'error': _error,
+      };
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -267,18 +294,9 @@ class UsersProvider with ChangeNotifier {
       _isLoading = true;
       _error = null;
       notifyListeners();
-      
-      // Delete from Auth (only if not the current user)
-      if (_auth.currentUser?.uid != userId) {
-        await _auth.currentUser?.delete();
-      }
-      
-      // Delete from Firestore
+      // Client cannot delete Auth users securely; remove Firestore doc instead
       await _firestore.collection('users').doc(userId).delete();
-      
-      // Update local state
-      _users.removeWhere((user) => user['id'] == userId);
-      notifyListeners();
+      await _loadUsers(reset: true);
     } catch (e) {
       _error = 'Failed to delete user: $e';
       rethrow;

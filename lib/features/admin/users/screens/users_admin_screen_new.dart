@@ -272,16 +272,32 @@ class _UsersAdminScreenContentState extends State<_UsersAdminScreenContent> {
       title: 'User Management',
       body: Consumer<UsersProvider>(
         builder: (context, provider, _) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 16),
-              _buildFilterSection(),
-              if (_showAddUserForm) _buildAddUserForm(),
-              const SizedBox(height: 16),
-              if (provider.error != null)
-                Padding(
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final screenH = MediaQuery.of(context).size.height;
+              final maxH = constraints.hasBoundedHeight ? constraints.maxHeight : screenH;
+
+              // Rough estimates for static sections; adjust as needed
+              const headerAndFiltersEstimate = 200.0; // header + filters + spacing
+              final addUserFormEstimate = _showAddUserForm ? 360.0 : 0.0;
+              final errorBannerEstimate = (provider.error != null) ? 72.0 : 0.0;
+
+              final availableListHeight = (maxH
+                      - headerAndFiltersEstimate
+                      - addUserFormEstimate
+                      - errorBannerEstimate)
+                  .clamp(240.0, double.infinity);
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 16),
+                  _buildFilterSection(),
+                  if (_showAddUserForm) _buildAddUserForm(),
+                  const SizedBox(height: 16),
+                  if (provider.error != null)
+                    Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Container(
                     padding: const EdgeInsets.all(12),
@@ -317,21 +333,21 @@ class _UsersAdminScreenContentState extends State<_UsersAdminScreenContent> {
                     ),
                   ),
                 ),
-              const SizedBox(height: 8),
-              if (provider.isLoading && provider.users.isEmpty)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: CircularProgressIndicator(),
+                  const SizedBox(height: 8),
+                  if (provider.isLoading && provider.users.isEmpty)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  SizedBox(
+                    height: availableListHeight,
+                    child: _buildUsersList(),
                   ),
-                ),
-              // IMPORTANT: Avoid Expanded in a Column within a scrollable parent (unbounded height)
-              // Give the list a finite height so it can layout properly.
-              SizedBox(
-                height: 600, // TODO: optionally compute dynamically
-                child: _buildUsersList(),
-              ),
-            ],
+                ],
+              );
+            },
           );
         },
       ),
