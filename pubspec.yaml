@@ -84,6 +84,7 @@ flutter:
   # Assets including fonts and images
   assets:
     # Images
+    - assets/images/school/
     - assets/images/school/CombinedParade.jpg
     - assets/images/school/hero-background.svg
     - assets/images/school/digital-lab.svg
@@ -94,6 +95,8 @@ flutter:
     - assets/images/school/CommunityDigitalLab2.png
     - assets/images/school/communityDigitalLab.png
     - assets/images/school/CityView.jpeg
+    # Include all images under the school directory (ensures new photos are bundled)
+    - assets/images/school/
     
     # Fonts - include all font files
     - assets/images/school/Noto_Sans/

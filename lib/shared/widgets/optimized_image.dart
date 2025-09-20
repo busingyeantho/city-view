@@ -8,9 +8,17 @@ class OptimizedImage extends StatefulWidget {
   final BoxFit fit;
   final double? width;
   final double? height;
-  final String? storagePath; // if provided, fetch variants map from images collection
+  final String?
+  storagePath; // if provided, fetch variants map from images collection
 
-  const OptimizedImage({super.key, required this.url, this.fit = BoxFit.cover, this.width, this.height, this.storagePath});
+  const OptimizedImage({
+    super.key,
+    required this.url,
+    this.fit = BoxFit.cover,
+    this.width,
+    this.height,
+    this.storagePath,
+  });
 
   @override
   State<OptimizedImage> createState() => _OptimizedImageState();
@@ -28,15 +36,20 @@ class _OptimizedImageState extends State<OptimizedImage> {
           setState(() => _visible = true);
         }
       },
-      child: _visible
-          ? _OptimizedNetwork(
-              urlFallback: widget.url,
-              fit: widget.fit,
-              width: widget.width,
-              height: widget.height,
-              storagePath: widget.storagePath,
-            )
-          : Container(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: widget.width, height: widget.height),
+      child:
+          _visible
+              ? _OptimizedNetwork(
+                urlFallback: widget.url,
+                fit: widget.fit,
+                width: widget.width,
+                height: widget.height,
+                storagePath: widget.storagePath,
+              )
+              : Container(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                width: widget.width,
+                height: widget.height,
+              ),
     );
   }
 }
@@ -48,19 +61,33 @@ class _OptimizedNetwork extends StatelessWidget {
   final double? height;
   final String? storagePath;
 
-  const _OptimizedNetwork({required this.urlFallback, required this.fit, this.width, this.height, this.storagePath});
+  const _OptimizedNetwork({
+    required this.urlFallback,
+    required this.fit,
+    this.width,
+    this.height,
+    this.storagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (storagePath == null || storagePath!.isEmpty) {
       return _image(urlFallback, context);
     }
-    final q = FirebaseFirestore.instance.collection('images').where('path', isEqualTo: storagePath).limit(1);
+    final q = FirebaseFirestore.instance
+        .collection('images')
+        .where('path', isEqualTo: storagePath)
+        .limit(1);
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: q.snapshots(),
       builder: (context, snapshot) {
-        final doc = (snapshot.data?.docs ?? []).isNotEmpty ? snapshot.data!.docs.first.data() : null;
-        final variants = (doc?['variants'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(int.tryParse(k) ?? 0, v as String));
+        final doc =
+            (snapshot.data?.docs ?? []).isNotEmpty
+                ? snapshot.data!.docs.first.data()
+                : null;
+        final variants = (doc?['variants'] as Map<String, dynamic>?)?.map(
+          (k, v) => MapEntry(int.tryParse(k) ?? 0, v as String),
+        );
         final chosen = _chooseUrlForWidth(context, variants) ?? urlFallback;
         return _image(chosen, context);
       },
@@ -87,10 +114,11 @@ class _OptimizedNetwork extends StatelessWidget {
       fit: fit,
       width: width,
       height: height,
-      placeholder: (c, _) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest),
+      placeholder:
+          (c, _) => Container(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          ),
       errorWidget: (c, _, __) => const Icon(Icons.broken_image),
     );
   }
 }
-
-

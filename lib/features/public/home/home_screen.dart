@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/ui/responsive_scaffold.dart';
@@ -12,8 +13,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       title: 'City View School',
-      body: Column(
-        children: [
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
           // Hero section with the background image and overlay
           Stack(
             children: [
@@ -174,11 +176,482 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
           const _CalloutBand(),
-          const _HighlightsGrid(),
+          const _SpecialTwoColumnShowcase(),
           const _ConstructionProgressSection(),
           const _DigitalLabShowcase(),
           const _StudentLifeSection(),
         ],
+      ),
+    ),
+    );
+  }
+}
+
+// New: Two-column section with description and image slider
+class _SpecialTwoColumnShowcase extends StatefulWidget {
+  const _SpecialTwoColumnShowcase();
+
+  @override
+  State<_SpecialTwoColumnShowcase> createState() => _SpecialTwoColumnShowcaseState();
+}
+
+class _SpecialTwoColumnShowcaseState extends State<_SpecialTwoColumnShowcase> {
+  final GlobalKey _leftKey = GlobalKey();
+  double? _leftHeight;
+
+  void _scheduleMeasure() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = _leftKey.currentContext;
+      if (ctx != null) {
+        final box = ctx.findRenderObject() as RenderBox?;
+        if (box != null) {
+          final h = box.size.height;
+          if (_leftHeight == null || (_leftHeight! - h).abs() > 1.0) {
+            setState(() => _leftHeight = h);
+          }
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    _scheduleMeasure();
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1100),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 900;
+
+              // Left column content (no Expanded here; wrap later if needed)
+              final leftColumn = Column(
+                key: _leftKey,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'What Makes Our Community Special',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Beyond facilities, it\'s the people, programs, and daily experiences that shape our learners. Explore a glimpse of life at City View.',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _BulletPoint(
+                    title: 'Games and Sports',
+                    subtitle:
+                        'Teamwork, fitness, and fair play through vibrant activities.',
+                  ),
+                  _BulletPoint(
+                    title: 'Digital Skilling',
+                    subtitle: 'AI literacy and responsible use, professional digital presentation and communication, career-oriented IT, and business technology skills.',
+                  ),
+                  _BulletPoint(
+                    title: 'Healthy Meals & Diet',
+                    subtitle:
+                        'Balanced nutrition to fuel learning and growth.',
+                  ),
+                  _BulletPoint(
+                    title: 'Dedicated Staff',
+                    subtitle:
+                        'Caring teachers committed to every learner\'s success.',
+                  ),
+                  _BulletPoint(
+                    title: 'Academic Environment',
+                    subtitle:
+                        'Structured, supportive, and engaging classrooms.',
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
+                    children: [
+                      FilledButton.icon(
+                        onPressed:
+                            () => GoRouter.of(context).go('/contact'),
+                        icon: const Icon(Icons.school),
+                        label: const Text('Visit Us'),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed:
+                            () => GoRouter.of(context).go('/admissions'),
+                        icon: const Icon(Icons.edit_document),
+                        label: const Text('Enroll Now'),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+
+              // Right carousel (no Expanded here; wrap later if needed)
+              final rightCarousel = ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: LayoutBuilder(
+                  builder: (context, c) {
+                    final aspect = isWide ? (16 / 9) : (4 / 3);
+                    final computed = c.maxWidth / aspect;
+                    // If we measured left column and we are wide, match heights; otherwise use computed clamp
+                    final height = isWide && _leftHeight != null
+                        ? _leftHeight!.clamp(280.0, 800.0)
+                        : computed.clamp(320.0, 520.0);
+                    return SizedBox(
+                      height: height,
+                      child: _ImageCarousel(
+                        images: const [
+                          'assets/images/school/SchoolDirector.jpg',
+                          'assets/images/school/SchoolDirector,WifeandSon.jpg',
+                          'assets/images/school/ConstructionWorkGoingon.jpg',
+                          'assets/images/school/SchoolpupilsonAssembly.jpg',
+                          'assets/images/school/SchoolDirectorWithPupilsOverWeekend.jpg',
+                        ],
+                        captions: const [
+                          'Leadership — School Director at City View',
+                          'Family — School Director with Family',
+                          'Campus — Construction Work Ongoing',
+                          'Community — Pupils on Assembly',
+                          'Weekend — Director with Pupils',
+                        ],
+                        alignments: const [
+                          Alignment.center, // Director portrait
+                          Alignment.topCenter, // Family photo: favor heads
+                          Alignment.center, // Construction
+                          Alignment.center, // Assembly
+                          Alignment.center, // Weekend
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              );
+
+              if (isWide) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 5, child: leftColumn),
+                    const SizedBox(width: 24, height: 24),
+                    Expanded(flex: 6, child: rightCarousel),
+                  ],
+                );
+              } else {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    rightCarousel,
+                    const SizedBox(height: 16),
+                    leftColumn,
+                  ],
+                );
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BulletPoint extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  const _BulletPoint({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.check_circle, size: 20, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImageCarousel extends StatefulWidget {
+  final List<String> images;
+  final List<String>? captions;
+  final List<Alignment>? alignments; // optional per-image alignment
+  const _ImageCarousel({required this.images, this.captions, this.alignments});
+
+  @override
+  State<_ImageCarousel> createState() => _ImageCarouselState();
+}
+
+class _ImageCarouselState extends State<_ImageCarousel> {
+  late final PageController _controller;
+  int _current = 0;
+  bool _didPrecache = false;
+  Timer? _autoTimer;
+  bool _isPaused = false;
+  static const Duration _autoInterval = Duration(seconds: 4);
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController();
+    _startAutoplay();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Precache images once to avoid jank on first swipe
+    if (!_didPrecache) {
+      final mq = MediaQuery.of(context);
+      final dpr = mq.devicePixelRatio;
+      final logicalWidth = mq.size.width;
+      // Choose a reasonable cap for decoded width depending on screen size
+      final capWidthPx = (logicalWidth * dpr).clamp(800, 1600).toInt();
+      for (final path in widget.images) {
+        // Precache a resized variant to reduce initial decode/memory cost
+        precacheImage(ResizeImage(AssetImage(path), width: capWidthPx), context);
+      }
+      _didPrecache = true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _autoTimer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    Widget content = Stack(
+      children: [
+        PageView.builder(
+          controller: _controller,
+          itemCount: widget.images.length,
+          onPageChanged: (i) {
+            setState(() => _current = i);
+            _restartAutoplay();
+          },
+          itemBuilder: (context, index) {
+            return LayoutBuilder(
+              builder: (context, c) {
+                final dpr = MediaQuery.of(context).devicePixelRatio;
+                final isWide = c.maxWidth > 900;
+                // Compute natural target size from layout
+                var targetWidthPx = (c.maxWidth * dpr).clamp(300, 4096).toInt();
+                var targetHeightPx = (c.maxHeight * dpr).clamp(200, 4096).toInt();
+                // Cap aggressively to reduce bandwidth/CPU without noticeable quality loss
+                final maxCapW = isWide ? 1800 : 1400;
+                final maxCapH = isWide ? 1100 : 900;
+                targetWidthPx = targetWidthPx.clamp(300, maxCapW);
+                targetHeightPx = targetHeightPx.clamp(200, maxCapH);
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      widget.images[index],
+                      fit: BoxFit.cover,
+                      alignment: widget.alignments != null &&
+                              index < widget.alignments!.length
+                          ? widget.alignments![index]
+                          : Alignment.center,
+                      cacheWidth: targetWidthPx,
+                      cacheHeight: targetHeightPx,
+                      gaplessPlayback: true,
+                      // Medium gives a nice balance; can use low on very slow devices
+                      filterQuality: FilterQuality.medium,
+                    ),
+                    // Gradient caption overlay
+                    if (widget.captions != null)
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.transparent, Colors.black54],
+                            ),
+                          ),
+                          padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.captions![index],
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+        // Dots indicator
+        Positioned(
+          bottom: 8,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(widget.images.length, (i) {
+              final active = i == _current;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                height: 8,
+                width: active ? 20 : 8,
+                decoration: BoxDecoration(
+                  color: active ? theme.colorScheme.primary : Colors.white70,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              );
+            }),
+          ),
+        ),
+        // Prev/Next controls
+        Positioned(
+          left: 8,
+          top: 0,
+          bottom: 0,
+          child: _NavButton(
+            icon: Icons.chevron_left,
+            onTap: () {
+              final prev = (_current - 1) % widget.images.length;
+              _controller.animateToPage(
+                prev < 0 ? widget.images.length - 1 : prev,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+              );
+              _restartAutoplay();
+            },
+          ),
+        ),
+        Positioned(
+          right: 8,
+          top: 0,
+          bottom: 0,
+          child: _NavButton(
+            icon: Icons.chevron_right,
+            onTap: () {
+              final next = (_current + 1) % widget.images.length;
+              _controller.animateToPage(
+                next,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+              );
+              _restartAutoplay();
+            },
+          ),
+        ),
+      ],
+    );
+
+    // Pause on hover (desktop/web) and on touch/drag (mobile)
+    return MouseRegion(
+      onEnter: (_) => _pauseAutoplay(),
+      onExit: (_) => _resumeAutoplay(),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => _pauseAutoplay(),
+        onTapUp: (_) => _resumeAutoplay(),
+        onTapCancel: _resumeAutoplay,
+        onPanDown: (_) => _pauseAutoplay(),
+        onPanCancel: _resumeAutoplay,
+        onPanEnd: (_) => _resumeAutoplay(),
+        child: content,
+      ),
+    );
+  }
+
+  void _startAutoplay() {
+    _autoTimer?.cancel();
+    _autoTimer = Timer.periodic(_autoInterval, (_) => _tick());
+  }
+
+  void _restartAutoplay() {
+    if (_isPaused) return; // keep paused if user is interacting
+    _startAutoplay();
+  }
+
+  void _pauseAutoplay() {
+    _isPaused = true;
+    _autoTimer?.cancel();
+  }
+
+  void _resumeAutoplay() {
+    if (!_isPaused) return;
+    _isPaused = false;
+    _startAutoplay();
+  }
+
+  void _tick() {
+    if (!mounted || _isPaused || widget.images.isEmpty) return;
+    final next = (_current + 1) % widget.images.length;
+    _controller.animateToPage(
+      next,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+}
+
+class _NavButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _NavButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black26,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Icon(icon, color: Colors.white, size: 28),
+        ),
       ),
     );
   }
@@ -256,7 +729,7 @@ class _HighlightsGrid extends StatelessWidget {
                   return Wrap(
                     spacing: 16,
                     runSpacing: 16,
-                    children: List.generate(3, (i) {
+                    children: List.generate(4, (i) {
                       return SizedBox(
                         width: w / columns - (16 * (columns - 1) / columns),
                         child: FeatureCard(
@@ -288,26 +761,29 @@ class _HighlightsGrid extends StatelessWidget {
   }
 
   Widget _iconFor(int i) {
-    switch (i % 3) {
+    switch (i % 4) {
       case 0:
         return SchoolImages.digitalLab(width: 32, height: 32);
       case 1:
         return SchoolImages.sportsActivity(width: 32, height: 32);
       case 2:
         return SchoolImages.healthyMeals(width: 32, height: 32);
+      case 3:
+        return const Icon(Icons.psychology_alt, size: 32);
       default:
         return const Icon(Icons.school, size: 32);
     }
   }
 
   String _titleFor(int i) =>
-      ['💻 Digital Literacy', '⚽ Sports & Games', '🍎 Healthy Meals'][i % 3];
+      ['💻 Digital Literacy', '⚽ Sports & Games', '🍎 Healthy Meals', '🧠 Digital Skilling'][i % 4];
   String _descFor(int i) =>
       [
         'Empowering students with modern IT skills, coding, and digital creativity in our state-of-the-art lab.',
         'Team spirit and fitness through comprehensive sports programs and outdoor activities.',
         'Nutritious, balanced diets prepared fresh daily to support learning and healthy growth.',
-      ][i % 3];
+        'AI literacy and responsible use, professional digital presentation and communication, career-oriented IT, and business technology skills.',
+      ][i % 4];
 }
 
 class _ConstructionProgressSection extends StatelessWidget {
@@ -343,7 +819,7 @@ class _ConstructionProgressSection extends StatelessWidget {
                 builder: (context, constraints) {
                   final isWide = constraints.maxWidth > 800;
                   return isWide
-                      ? Row(
+                      ? const Row(
                         children: [
                           Expanded(
                             child: ConstructionCard(
@@ -355,7 +831,7 @@ class _ConstructionProgressSection extends StatelessWidget {
                               statusColor: Colors.green,
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           Expanded(
                             child: ConstructionCard(
                               floor: '2nd Floor',
@@ -366,7 +842,7 @@ class _ConstructionProgressSection extends StatelessWidget {
                               statusColor: Colors.orange,
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           Expanded(
                             child: ConstructionCard(
                               floor: '3rd Floor',
@@ -377,7 +853,7 @@ class _ConstructionProgressSection extends StatelessWidget {
                               statusColor: Colors.blue,
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           Expanded(
                             child: ConstructionCard(
                               floor: '4th Floor',
@@ -390,7 +866,7 @@ class _ConstructionProgressSection extends StatelessWidget {
                           ),
                         ],
                       )
-                      : Column(
+                      : const Column(
                         children: [
                           ConstructionCard(
                             floor: 'Ground & 1st Floor',
@@ -400,7 +876,7 @@ class _ConstructionProgressSection extends StatelessWidget {
                             progress: 100,
                             statusColor: Colors.green,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           ConstructionCard(
                             floor: '2nd Floor',
                             status: '🔨 In Progress',
@@ -409,7 +885,7 @@ class _ConstructionProgressSection extends StatelessWidget {
                             progress: 85,
                             statusColor: Colors.orange,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           ConstructionCard(
                             floor: '3rd Floor',
                             status: '📋 Planning',
@@ -418,7 +894,7 @@ class _ConstructionProgressSection extends StatelessWidget {
                             progress: 30,
                             statusColor: Colors.blue,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           ConstructionCard(
                             floor: '4th Floor',
                             status: '🎯 Planned',

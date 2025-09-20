@@ -30,17 +30,16 @@ class SchoolFooter extends StatelessWidget {
             ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1200),
-              child: ResponsiveHelper.isMobile(context)
-                  ? _buildMobileFooter(context)
-                  : _buildDesktopFooter(context),
+              child:
+                  ResponsiveHelper.isMobile(context)
+                      ? _buildMobileFooter(context)
+                      : _buildDesktopFooter(context),
             ),
           ),
           // Bottom bar
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-            decoration: BoxDecoration(
-              color: SchoolColors.primaryDark,
-            ),
+            decoration: BoxDecoration(color: SchoolColors.primaryDark),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1200),
               child: _buildBottomBar(context),
@@ -56,25 +55,16 @@ class SchoolFooter extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // School Info Section
-        Expanded(
-          flex: 2,
-          child: _buildSchoolInfoSection(context),
-        ),
+        Expanded(flex: 2, child: _buildSchoolInfoSection(context)),
         const SizedBox(width: 48),
         // Quick Links Section
-        Expanded(
-          child: _buildQuickLinksSection(context),
-        ),
+        Expanded(child: _buildQuickLinksSection(context)),
         const SizedBox(width: 32),
         // Contact Info Section
-        Expanded(
-          child: _buildContactSection(context),
-        ),
+        Expanded(child: _buildContactSection(context)),
         const SizedBox(width: 32),
         // Social Media Section
-        Expanded(
-          child: _buildSocialSection(context),
-        ),
+        Expanded(child: _buildSocialSection(context)),
       ],
     );
   }
@@ -153,11 +143,7 @@ class SchoolFooter extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(
-                Icons.school,
-                color: SchoolColors.secondary3,
-                size: 24,
-              ),
+              Icon(Icons.school, color: SchoolColors.secondary3, size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -205,15 +191,10 @@ class SchoolFooter extends StatelessWidget {
           context,
           Icons.location_on,
           'Address',
-          '123 Education Street\nCity View, State 12345',
+          '123 Education Street\nCity View, Mbarara Uganda',
         ),
         const SizedBox(height: 12),
-        _buildContactItem(
-          context,
-          Icons.phone,
-          'Phone',
-          '+1 (555) 123-4567',
-        ),
+        _buildContactItem(context, Icons.phone, 'Phone', '+256 (78) 806-3562'),
         const SizedBox(height: 12),
         _buildContactItem(
           context,
@@ -299,7 +280,7 @@ class SchoolFooter extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextField(
-                      style: TextStyle(color: SchoolColors.lightText),
+                      style: const TextStyle(color: SchoolColors.lightText),
                       decoration: InputDecoration(
                         hintText: 'Enter your email',
                         hintStyle: TextStyle(
@@ -395,11 +376,7 @@ class SchoolFooter extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: SchoolColors.secondary2,
-          size: 16,
-        ),
+        Icon(icon, color: SchoolColors.secondary2, size: 16),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -441,15 +418,9 @@ class SchoolFooter extends StatelessWidget {
           decoration: BoxDecoration(
             color: SchoolColors.secondary1.withOpacity(0.2),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: SchoolColors.secondary2.withOpacity(0.3),
-            ),
+            border: Border.all(color: SchoolColors.secondary2.withOpacity(0.3)),
           ),
-          child: Icon(
-            icon,
-            color: SchoolColors.secondary3,
-            size: 20,
-          ),
+          child: Icon(icon, color: SchoolColors.secondary3, size: 20),
         ),
       ),
     );
@@ -458,20 +429,20 @@ class SchoolFooter extends StatelessWidget {
   Widget _buildBottomBar(BuildContext context) {
     final isMobile = ResponsiveHelper.isMobile(context);
     final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: SchoolColors.lightText.withOpacity(0.8),
-        );
-    
+      color: SchoolColors.lightText.withOpacity(0.8),
+    );
+
     final links = [
       _buildBottomLink(context, 'Privacy Policy', _showPrivacyPolicy),
       _buildBottomLink(context, 'Terms of Service', _showTermsOfService),
       _buildBottomLink(context, 'Accessibility', _showAccessibility),
     ];
-    
+
     final copyright = Text(
       '© ${DateTime.now().year} City View School. All rights reserved.',
       style: textStyle,
     );
-    
+
     // For mobile, stack the copyright and links vertically
     if (isMobile) {
       return Column(
@@ -492,7 +463,7 @@ class SchoolFooter extends StatelessWidget {
         ],
       );
     }
-    
+
     // For desktop, show copyright on left, links on right
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -515,14 +486,12 @@ class SchoolFooter extends StatelessWidget {
             ],
           );
         }
-        
+
         // For wider screens, use row layout
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Flexible(
-              child: copyright,
-            ),
+            Flexible(child: copyright),
             const SizedBox(width: 16),
             Flexible(
               child: Wrap(
@@ -536,10 +505,10 @@ class SchoolFooter extends StatelessWidget {
       },
     );
   }
-  
+
   Widget _buildBottomLink(
-    BuildContext context, 
-    String text, 
+    BuildContext context,
+    String text,
     VoidCallback onTap,
   ) {
     return InkWell(
